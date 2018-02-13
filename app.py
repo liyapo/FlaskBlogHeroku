@@ -1,7 +1,8 @@
 from flask import Flask, render_template, request, redirect, url_for
-from flask_sqlalchemy import SQLAlchemy
+from flask.ext.sqlalchemy import SQLAlchemy
 from datetime import datetime
 import psycopg2
+from flask.ext.heroku import heroku
 
 POSTGRES = {
     'user': 'postgres',
@@ -12,13 +13,14 @@ POSTGRES = {
 }
 
 app = Flask(__name__) # create the application instance
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql+psycopg2://%(user)s:%(pw)s@%(host)s:%(port)s/%(db)s' % POSTGRES
+#app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql+psycopg2://%(user)s:%(pw)s@%(host)s:%(port)s/%(db)s' % POSTGRES
 #'postgresql:///postgres:postgres123@localhost/blogflask'
 #'postgresql:///%(user)s:%(pw)s@%(host)s:%(port)s/%(db)s' % POSTGRES # load config from this file
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False # silence the deprecation warning
 DB_URL = 'postgresql+psycopg2://%(user)s:%(pw)s@%(host)s:%(port)s/%(db)s' % POSTGRES
 
 # our data base
+heroku = Heroku(app)
 db = SQLAlchemy(app)
 
 # from command line you can reset your database with commands:
