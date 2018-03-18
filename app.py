@@ -14,7 +14,7 @@ POSTGRES = {
 }
 
 app = Flask(__name__) # create the application instance
-#app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql+psycopg2://%(user)s:%(pw)s@%(host)s:%(port)s/%(db)s' % POSTGRES
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql+psycopg2://%(user)s:%(pw)s@%(host)s:%(port)s/%(db)s' % POSTGRES
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False # silence the deprecation warning
 DB_URL = 'postgresql+psycopg2://%(user)s:%(pw)s@%(host)s:%(port)s/%(db)s' % POSTGRES
@@ -24,7 +24,7 @@ heroku = Heroku(app)
 db = SQLAlchemy(app)
 
 # from command line you can reset your database with commands:
-# > set FLASK_APP = routes.py
+# > set FLASK_APP = app.py
 # > flask resetdb
 @app.cli.command()
 def resetdb():
@@ -50,16 +50,19 @@ class Postblog(db.Model):
     text = db.Column(db.Text)
     created_at = db.Column(db.DateTime)
 
+@app.route("/api/")
+def api_flaskblog():
+    #API
+    return "JSON"
+
 @app.route("/")
 def list_articles():
     posts = Postblog.query.all()
-    #created_at = post.created_at.strftime('%B %d, %Y at %H:%M:%S')
     return render_template('listarticles.html', posts=posts)
 
 @app.route("/detailarticles/<int:pk>")
 def detail_articles(pk):
     post = Postblog.query.filter_by(id=pk).one()
-#    created_at = post.created_at.strftime('%B %d, %Y at %H:%M:%S')
     return render_template('detailarticles.html', post=post)
 
 @app.route("/createarticle/")
@@ -72,7 +75,6 @@ def create_post():
     subtitle = request.form['subtitle']
     author = request.form['author']
     text = request.form['text']
-    #created_at = datetime.now().strftime('%B %d, %Y at %H:%M:%S')
     created_at = datetime.now().strftime('%B %d, %Y at %H:%M:%S')
 
     post = Postblog(title=title, subtitle=subtitle, author=author, text=text, created_at=created_at)
