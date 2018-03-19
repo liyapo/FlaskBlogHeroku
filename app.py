@@ -3,6 +3,9 @@ from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 import psycopg2
 from flask_heroku import Heroku
+from postSerializer import *
+import json
+
 
  
 POSTGRES = {
@@ -23,10 +26,13 @@ DB_URL = 'postgresql+psycopg2://%(user)s:%(pw)s@%(host)s:%(port)s/%(db)s' % POST
 heroku = Heroku(app)
 db = SQLAlchemy(app)
 
+#def __repr__(self):
+#    return '<Postblog "{}">'.format(self.title)
+#
 # from command line you can reset your database with commands:
 # > set FLASK_APP = app.py
 # > flask resetdb
-@app.cli.command()
+'''@app.cli.command()
 def resetdb():
     """Destroys and creates the database + tables."""
 
@@ -40,7 +46,7 @@ def resetdb():
 
     print('Creating tables.')
     db.create_all()
-    print('Shiny!')
+    print('Shiny!')'''
 
 class Postblog(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -51,10 +57,13 @@ class Postblog(db.Model):
     created_at = db.Column(db.DateTime)
 
 @app.route("/api/")
-def api_flaskblog():
-    #API
-    return "JSON"
-
+def api_get_posts():
+    posts = Postblog.query.all()
+   
+    #jsonP = PostSchema(many=True)
+    #api_json = jsonP.dump(posts).data
+    return "json"
+    
 @app.route("/")
 def list_articles():
     posts = Postblog.query.all()
